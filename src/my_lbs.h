@@ -22,7 +22,8 @@ extern "C" {
 /** @brief PBM Service and Advertising UUID. */
 #define BT_UUID_PBM_VAL                BT_UUID_128_ENCODE(0x0000525F, 0x45D0, 0x4AA9, 0xDB0A, 0x93D9E09A7CFC)
 #define BT_UUID_PBM_ADVERTISING_VAL    BT_UUID_128_ENCODE(0x000062C4, 0xB99E, 0x4141, 0x9439, 0xC4F9DB977899)
-                                                          
+                
+
 /** @brief COMMAND Characteristic UUID. */
 #define BT_UUID_PBM_COMMAND_VAL                                                       \
 	BT_UUID_128_ENCODE(0x0100525F, 0x45D0, 0x4AA9, 0xDB0A, 0x93D9E09A7CFC)
