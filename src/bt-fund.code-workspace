@@ -1,0 +1,15 @@
+{
+    "folders": [
+        {
+            "path": "../../.."
+        }
+    ],
+    "settings": {
+        "nrf-connect.applications": [
+            "${workspaceFolder}\\l4\\l4_e2_sol"
+        ],
+        "files.associations": {
+            "compare": "c"
+        }
+    }
+}
