@@ -111,11 +111,11 @@ void send_data_thread(void)
 	}
 }
 
-static struct my_pbm_cb app_callbacks = {
+/*static struct my_pbm_cb app_callbacks = {
 	.led_cb = app_led_cb,
 	.button_cb = app_button_cb,
 };
-
+*/
 static void button_changed(uint32_t button_state, uint32_t has_changed)
 {
 	if (has_changed & USER_BUTTON) {
@@ -212,7 +212,7 @@ int main(void)
 	}
 	bt_conn_cb_register(&connection_callbacks);
 
-	err = my_pbm_init(&app_callbacks);
+	err = my_pbm_init();
 	if (err) {
 		printk("Failed to init LBS (err:%d)\n", err);
 		return -1;

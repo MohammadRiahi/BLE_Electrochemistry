@@ -29,6 +29,26 @@
 
 #include "my_pbm.h"
 #include "my_pbm_service_table.h"
+//-----------------------------Threads------------------------------------------------
+#define ADC_THREAD_STACK_SIZE 1024
+#define BLE_THREAD_STACK_SIZE 1024
+#define ADC_THREAD_PRIORITY 5
+#define BLE_THREAD_PRIORITY 5
+
+K_THREAD_STACK_DEFINE(adc_thread_stack, ADC_THREAD_STACK_SIZE);
+K_THREAD_STACK_DEFINE(ble_thread_stack, BLE_THREAD_STACK_SIZE);
+
+struct k_thread adc_thread_data;
+struct k_thread ble_thread_data;
+
+struct k_mutex ring_buffer_mutex;
+struct k_sem data_ready_sem;
+struct k_timer adc_timer;
+struct k_sem adc_sample_sem;
+//--------------------------Thread entry functions prototypes-------------------------
+void adc_thread(void *p1, void *p2, void *p3);
+void ble_thread(void *p1, void *p2, void *p3);
+
 //-----------------------------Constants----------------------------------------------
 // ADC and data packet configuration
 #define ADC_RESOLUTION 12
@@ -73,24 +93,30 @@ static uint32_t decodeSampleRate(uint8_t code) {
 
 static bool notify_DATA_enabled;
 static bool notify_MESSAGE_enabled;
-static struct my_pbm_cb pbm_cb;
+//static struct my_pbm_cb pbm_cb;
 static uint8_t command_buffer[16]; // Buffer to store 16-yybyte commands
 static uint8_t heartbeat_buffer[8]; // Buffer for heartbeat value
 static char message_buffer[120]; // Static buffer for JSON messages
-static char data_buffer[244]; // Buffer for DATA characteristic
+//static char data_buffer[244]; // Buffer for DATA characteristic
 // Define the default command array
 uint8_t default_command[16] = {0x00, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 // Simple continuous measurement variables
 static bool is_measuring = false;
 
+
+
 // BLE connection state tracking (handled in main.c)
-static struct k_work adc_work;
+/* commenting out for using threads
+/static struct k_work adc_work;
 static struct k_work packet_work;
 static struct k_timer adc_timer; // 1 ms Timer constants and definitions
 static void   adc_timer_handler(struct k_timer *timer);
 static void   adc_work_handler(struct k_work *work);
 static void   packet_work_handler(struct k_work *work);
+*/
+static void   adc_timer_handler(struct k_timer *timer);
+static void   packet_work_handler(uint8_t *packet);
 static void   prepare_packet_header(uint8_t* packet);
 static uint64_t get_timestamp(void);
 static void adc_setup(uint8_t channel);
@@ -102,7 +128,7 @@ LOG_MODULE_DECLARE(Lesson4_Exercise2);
 
 static const struct device *adc_dev = DEVICE_DT_GET(DT_NODELABEL(adc));
 static int16_t adc_sample_buffer;
-static struct adc_channel_cfg channel_cfg;
+//static struct adc_channel_cfg channel_cfg;
 static struct adc_sequence sequence;
 
 // -----------------Service functions and handlers ---------------------
@@ -321,7 +347,7 @@ static ssize_t write_commands(struct bt_conn *conn, const struct bt_gatt_attr *a
 			break;
 		case CMD_START_SINGLE:
 			LOG_INF("Command: START_SINGLE");
-			//adc_setup(SENSOR_PIN); // set up the ADC
+			/*adc_setup(SENSOR_PIN); // set up the ADC
 			// Send a single data packet
 			if (notify_DATA_enabled) {
 				memset(data_buffer, 0, sizeof(data_buffer)); // filling the buffer with zeros
@@ -336,10 +362,17 @@ static ssize_t write_commands(struct bt_conn *conn, const struct bt_gatt_attr *a
 			} else {
 				LOG_WRN("DATA notifications not enabled");
 			}
+				*/
 			break;
 		case CMD_START_CONTINUOUS:
 			//adc_setup(SENSOR_PIN); // set up the ADC
 			LOG_INF("Command: START_CONTINUOUS");
+			k_mutex_init(&ring_buffer_mutex);
+			k_sem_init(&data_ready_sem, 0, 1); // 0 available, max 1
+			k_thread_create(&adc_thread_data, adc_thread_stack, ADC_THREAD_STACK_SIZE,
+                adc_thread, NULL, NULL, NULL, ADC_THREAD_PRIORITY, 0, K_NO_WAIT);
+			k_thread_create(&ble_thread_data, ble_thread_stack, BLE_THREAD_STACK_SIZE,
+                ble_thread, NULL, NULL, NULL, BLE_THREAD_PRIORITY, 0, K_NO_WAIT);
 			start_continuous_measurement_timer();
 			break;
 			
@@ -418,7 +451,7 @@ static uint16_t read_adc_single(void){
 	}
 }
 
-static uint16_t read_adc_channel(uint8_t channel) {
+/*static uint16_t read_adc_channel(uint8_t channel) {
 	sequence.channels = BIT(channel);
 	if (adc_read(adc_dev, &sequence) == 0) {
 		return adc_sample_buffer;
@@ -426,13 +459,13 @@ static uint16_t read_adc_channel(uint8_t channel) {
 		LOG_ERR("ADC read failed for channel %d", channel);
 		return 0; // Return 0 on failure
 	}
+}*/
+	
+static void adc_timer_handler(struct k_timer *timer)
+{
+	k_sem_give(&adc_sample_sem);
 }
-static void adc_timer_handler(struct k_timer *timer){
-	if(!k_work_is_pending(&adc_work)){
-		k_work_submit(&adc_work);
-	}
-}
-
+/*
 static void adc_work_handler(struct k_work*work)
 {
 	if (!is_measuring) return;
@@ -455,12 +488,11 @@ static void adc_work_handler(struct k_work*work)
 		}
 	}
 }
-static void packet_work_handler(struct k_work*work)
+	*/
+static void packet_work_handler(uint8_t *packet)
 {
-	if (!is_measuring) return;
+	//if (!is_measuring) return;
 	if(ring_buffer_count() < SAMPLES_PER_PACKET) return;
-
-	uint8_t packet[DATAPACKET_SIZE];
 	memset(packet, 0, DATAPACKET_SIZE);
 
 	prepare_packet_header(packet);
@@ -475,21 +507,8 @@ static void packet_work_handler(struct k_work*work)
 			break;
 		}
 	}
-	if (notify_DATA_enabled) {
-		int err = my_pbm_send_sensor_notify(packet);
-		if (err) {
-			LOG_ERR("Notify DATA failed (err %d)", err);
-		}  else if(err == -ENOMEM){
-			LOG_WRN("BLE buffer full, packet dropped");
-		}
-		else if (err == 0) {
-			LOG_DBG("Notify DATA sent");
-		}
-		else {
-			LOG_WRN("DATA notifications not enabled");
-		}
-	}
 }
+
 static void prepare_packet_header(uint8_t* packet){
 	uint64_t unix_time = get_timestamp();
 	for (int i = 0; i < 6; i++) {
@@ -534,6 +553,52 @@ static void adc_setup(uint8_t channel)
 	LOG_INF("ADC setup complete for channel %d", channel);
 }
 
+void adc_thread(void *p1, void *p2, void *p3) {
+    while (is_measuring) {
+        k_sem_take(&adc_sample_sem, K_FOREVER);
+        // Take ADC sample, lock mutex, put in buffer, unlock mutex, etc.
+        // If enough samples, k_sem_give(&data_ready_sem);
+        uint16_t sample;
+        if (averaging > 1) {
+            sample = read_adc_averaged(averaging);
+        } else {
+            sample = read_adc_single();
+        }
+        k_mutex_lock(&ring_buffer_mutex, K_FOREVER);
+        ring_buffer_put(sample);
+        k_mutex_unlock(&ring_buffer_mutex);
+
+        if (ring_buffer_count() >= SAMPLES_PER_PACKET) {
+            k_sem_give(&data_ready_sem);
+        }
+    }		
+}
+
+void ble_thread(void *p1, void *p2, void *p3) {
+	 uint8_t packet[DATAPACKET_SIZE];
+    while (is_measuring) {
+        k_sem_take(&data_ready_sem, K_FOREVER);
+        k_mutex_lock(&ring_buffer_mutex, K_FOREVER);// using mutex to protect ring buffer access
+		packet_work_handler(packet);
+        k_mutex_unlock(&ring_buffer_mutex);
+		// send over BLE
+			if (notify_DATA_enabled) {
+		int err = my_pbm_send_sensor_notify(packet);
+		if (err) {
+			LOG_ERR("Notify DATA failed (err %d)", err);
+		}  else if(err == -ENOMEM){
+			LOG_WRN("BLE buffer full, packet dropped");
+		}
+		else if (err == 0) {
+			LOG_DBG("Notify DATA sent");
+		}
+		else {
+			LOG_WRN("DATA notifications not enabled");
+			}
+	  	}
+	}
+}
+
 static void start_timer_sampling(uint32_t frequency_hz){
 	ring_buffer_reset();
 	uint32_t period_us  = 1000000 / frequency_hz;
@@ -542,10 +607,15 @@ static void start_timer_sampling(uint32_t frequency_hz){
 	LOG_INF("Started timer sampling at %d Hz (%d μs period)",frequency_hz, period_us);
 }
 static void stop_timer_sampling(void){
-	k_timer_stop(&adc_timer);
+	/*
 	k_work_cancel(&adc_work);
 	k_work_cancel(&packet_work);
+	*/
+	k_timer_stop(&adc_timer);
+	k_sem_give(&adc_sample_sem);
+	k_sem_give(&data_ready_sem);
 	is_measuring = false;
+	ring_buffer_reset();
 	LOG_INF("Stopped timer sampling");
 }
 
@@ -555,6 +625,9 @@ static void start_continuous_measurement_timer(void){
 		return;
 	}
 	LOG_INF("Starting timer-based measurement at %d Hz", samplingRate);
+	k_sem_init(&adc_sample_sem, 0, 1);
+	k_timer_init(&adc_timer, adc_timer_handler, NULL);
+	k_timer_start(&adc_timer, K_MSEC(1), K_MSEC(1));
 	start_timer_sampling(samplingRate);
 }
 
@@ -605,7 +678,7 @@ BT_GATT_SERVICE_DEFINE(
     BT_GATT_CUD("HEARTBEAT", BT_GATT_PERM_READ)
 );
 
-int my_pbm_init(struct my_pbm_cb *callbacks)
+int my_pbm_init(void)
 {
 	LOG_INF("PBM service initialization started");
 	memcpy(command_buffer, default_command, 16);
@@ -621,11 +694,11 @@ int my_pbm_init(struct my_pbm_cb *callbacks)
 		gpio_pin_configure(gpio1_dev, LED1_PIN, GPIO_OUTPUT_ACTIVE);
 		gpio_pin_set(gpio1_dev, LED1_PIN, 0);
 	}
-	k_work_init(&adc_work,    adc_work_handler);
-	k_work_init(&packet_work, packet_work_handler);
+	//k_work_init(&adc_work,    adc_work_handler);
+	//k_work_init(&packet_work, packet_work_handler);
 	ring_buffer_reset();
 	adc_setup(SENSOR_PIN);
-	k_timer_init(&adc_timer, adc_timer_handler, NULL);
+	//k_timer_init(&adc_timer, adc_timer_handler, NULL);
 	LOG_INF("Service has %d attributes", my_pbm_svc.attr_count);
 	for (int i = 0; i < my_pbm_svc.attr_count; i++) {
 		LOG_INF("Attr[%d]: UUID type %d, read=%p, write=%p", 

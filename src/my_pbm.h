@@ -28,7 +28,7 @@ enum CommandType {
 
 extern uint8_t default_command[16];
 
-int my_pbm_init(struct my_pbm_cb *callbacks);
+int my_pbm_init(void);
 int my_pbm_send_button_state_indicate(bool button_state);
 int my_pbm_send_button_state_notify(bool button_state);
 int my_pbm_send_sensor_notify(uint8_t *sensor_value);
