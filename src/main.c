@@ -12,7 +12,8 @@
 #include <zephyr/bluetooth/conn.h>
 #include <dk_buttons_and_leds.h>
 #include <zephyr/drivers/gpio.h>
-#include "my_lbs.h"
+#include "my_pbm.h"
+#include "my_pbm_service_table.h"
 
 
 static const struct bt_le_adv_param *adv_param = BT_LE_ADV_PARAM(
@@ -40,6 +41,11 @@ LOG_MODULE_REGISTER(Lesson4_Exercise2, LOG_LEVEL_DBG);
 #define MEASURE_PIN 3 // gpio used for adc timer verification
 extern const struct device *gpio_dev;
 extern const struct device *gpio1_dev;
+
+void toggle_led2(void);
+void toggle_led1(void);
+void set_led2(bool state);
+void set_led1(bool state);
 
 static bool app_button_state;
 static struct k_work adv_work;
@@ -99,13 +105,13 @@ void send_data_thread(void)
 		/* Simulate data */
 		simulate_data();
 		/* Send notification, the function sends notifications only if a client is subscribed */
-		//my_lbs_send_sensor_notify(app_sensor_value);
+		//my_pbm_send_sensor_notify(app_sensor_value);
 
 		k_sleep(K_MSEC(NOTIFY_INTERVAL));
 	}
 }
 
-static struct my_lbs_cb app_callbacks = {
+static struct my_pbm_cb app_callbacks = {
 	.led_cb = app_led_cb,
 	.button_cb = app_button_cb,
 };
@@ -206,7 +212,7 @@ int main(void)
 	}
 	bt_conn_cb_register(&connection_callbacks);
 
-	err = my_lbs_init(&app_callbacks);
+	err = my_pbm_init(&app_callbacks);
 	if (err) {
 		printk("Failed to init LBS (err:%d)\n", err);
 		return -1;

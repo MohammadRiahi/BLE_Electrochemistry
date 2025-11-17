@@ -1,7 +1,7 @@
-C:\PhDLaptop\GitHubRepositories\Learning_BLE\l4\l4_e2_sol\build\Kconfig\Kconfig.dts
-C:\PhDLaptop\GitHubRepositories\Learning_BLE\l4\l4_e2_sol\build\Kconfig\Kconfig.modules
-C:\PhDLaptop\GitHubRepositories\Learning_BLE\l4\l4_e2_sol\build\Kconfig\Kconfig.shield
-C:\PhDLaptop\GitHubRepositories\Learning_BLE\l4\l4_e2_sol\build\Kconfig\Kconfig.shield.defconfig
+C:\PhDLaptop\GitHubRepositories\BLE_Electrochemistry\V0\build\Kconfig\Kconfig.dts
+C:\PhDLaptop\GitHubRepositories\BLE_Electrochemistry\V0\build\Kconfig\Kconfig.modules
+C:\PhDLaptop\GitHubRepositories\BLE_Electrochemistry\V0\build\Kconfig\Kconfig.shield
+C:\PhDLaptop\GitHubRepositories\BLE_Electrochemistry\V0\build\Kconfig\Kconfig.shield.defconfig
 C:\ncs\toolchains\cf2149caf2\opt\zephyr-sdk\cmake\zephyr\Kconfig
 C:\ncs\v2.6.1\modules\hal\cirrus-logic\Kconfig
 C:\ncs\v2.6.1\modules\lib\chre\platform\zephyr\Kconfig

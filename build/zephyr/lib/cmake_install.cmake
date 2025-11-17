@@ -39,26 +39,26 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/lib/crc/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/lib/crc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/lib/libc/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/lib/libc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/lib/posix/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/lib/posix/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/lib/hash/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/lib/hash/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/lib/os/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/lib/os/cmake_install.cmake")
 endif()
 

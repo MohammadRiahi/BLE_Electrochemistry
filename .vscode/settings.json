@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "my_pbm.h": "c",
+        "types.h": "c"
+    }
+}

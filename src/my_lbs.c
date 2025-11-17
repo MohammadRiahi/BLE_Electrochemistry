@@ -3,11 +3,10 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-
 /** @file
  *  @brief LED Button Service (LBS) sample
  */
-
+// (File intentionally left blank after migration to my_pbm.c)
 #include <zephyr/types.h>
 #include <stddef.h>
 #include <string.h>
@@ -40,37 +39,6 @@
 const struct device *gpio_dev;
 const struct device *gpio1_dev;
 
-//Buffering 
-#define DATAPACKET_SIZE 244
-#define BUFFER_COUNT 2 // Double buffering 
-#define RING_SIZE 512  // Must be power of 2 for efficiency
-#define RING_MASK (RING_SIZE-1)  // For fast modulo operations
-#define SAMPLES_PER_PACKET 118  // Based on (244-8)/2 = 118 samples per packet
-static uint16_t adc_ring_buffer[RING_SIZE]; // Ring buffer for ADC samples
-static volatile uint32_t ring_write_idx = 0;
-static volatile uint32_t ring_read_idx = 0;
-
-/* Forward declaration of the GATT service */
-extern const struct bt_gatt_service_static my_pbm_svc;
-
-// Sampling parameters 
-volatile uint8_t averaging = 1; //Set by the user on the app
-volatile uint32_t samplingRate = 1000; // Hz
-
-/* Helper function to decode sample rate from code */
-static uint32_t decodeSampleRate(uint8_t code) {
-    switch (code) {
-        case 0: return 100;
-        case 1: return 250;
-        case 2: return 500;
-        case 3: return 1000;
-        case 4: return 2000;
-        case 5: return 4000;
-        default: return 1000;  // default fallback
-    }
-}
-
-static bool notify_DATA_enabled;
 static bool notify_MESSAGE_enabled;
 static struct my_lbs_cb lbs_cb;
 static uint8_t command_buffer[16]; // Buffer to store 16-byte commands
@@ -755,28 +723,8 @@ void toggle_led2(void) {
 
 
 
-// -------------------------------BLE related coedde---------------------------------
-/* PIBiomed (PBM)  Service Declaration */
-BT_GATT_SERVICE_DEFINE(
-	my_pbm_svc, BT_GATT_PRIMARY_SERVICE(BT_UUID_PBM),
-	
-	// Command Characteristic with descriptive name
-	BT_GATT_CHARACTERISTIC(BT_UUID_PBM_COMMAND, BT_GATT_CHRC_WRITE | BT_GATT_CHRC_READ, BT_GATT_PERM_WRITE | BT_GATT_PERM_READ, read_commands, write_commands, &command_buffer),
-	BT_GATT_CUD("COMMAND", BT_GATT_PERM_READ),
-		
-	// Data Characteristic with descriptive name
-	BT_GATT_CHARACTERISTIC(BT_UUID_PBM_DATA, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY, BT_GATT_PERM_NONE, NULL, NULL, NULL),
-	BT_GATT_CUD("DATA", BT_GATT_PERM_READ),
-	BT_GATT_CCC(mylbsbc_ccc_DATA_cfg_changed, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
-	
-	// Message Characteristic with descriptive name
-	BT_GATT_CHARACTERISTIC(BT_UUID_PBM_MESSAGE, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY, BT_GATT_PERM_NONE, NULL, NULL, NULL),
-	BT_GATT_CUD("MESSAGE", BT_GATT_PERM_READ),
-	BT_GATT_CCC(mylbsbc_ccc_message_cfg_changed, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
-	// HeartBeat Characteristic with descriptive name
-	BT_GATT_CHARACTERISTIC(BT_UUID_PBM_HEARTBEAT, BT_GATT_CHRC_WRITE | BT_GATT_CHRC_READ, BT_GATT_PERM_WRITE, NULL, write_heartbeat, &heartbeat_buffer),
-	BT_GATT_CUD("HEARTBEAT", BT_GATT_PERM_READ),
-);
+// -------------------------------BLE related code---------------------------------
+#include "my_lbs_service_table.h"
 
 /* A function to register application callbacks for the LED and Button characteristics  */
 int my_lbs_init(struct my_lbs_cb *callbacks)

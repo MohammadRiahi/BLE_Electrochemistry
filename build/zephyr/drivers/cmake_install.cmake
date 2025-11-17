@@ -39,71 +39,71 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/disk/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/disk/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/interrupt_controller/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/interrupt_controller/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/misc/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/misc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/pcie/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/pcie/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/usb/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/usb/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/usb_c/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/usb_c/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/adc/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/adc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/clock_control/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/clock_control/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/console/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/console/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/entropy/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/entropy/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/gpio/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/gpio/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/pinctrl/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/pinctrl/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/serial/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/serial/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/PhDLaptop/GitHubRepositories/Learning_BLE/l4/l4_e2_sol/build/zephyr/drivers/timer/cmake_install.cmake")
+  include("C:/PhDLaptop/GitHubRepositories/BLE_Electrochemistry/V0/build/zephyr/drivers/timer/cmake_install.cmake")
 endif()
 
